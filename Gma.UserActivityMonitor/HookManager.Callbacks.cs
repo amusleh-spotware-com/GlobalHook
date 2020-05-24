@@ -3,11 +3,22 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Gma.UserActivityMonitor
 {
     public static partial class HookManager
     {
+        private static readonly List<Keys> _pressedKeys = new List<Keys>();
+
+        public static IEnumerable<Keys> PressedKeys
+        {
+            get
+            {
+                return _pressedKeys;
+            }
+        }
+
         /// <summary>
         /// The CallWndProc hook procedure is an application-defined or library-defined callback 
         /// function used with the SetWindowsHookEx function. The HOOKPROC type defines a pointer 
@@ -326,16 +337,23 @@ namespace Gma.UserActivityMonitor
                 //read structure KeyboardHookStruct at lParam
                 KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
                 //raise KeyDown
-                if (s_KeyDown != null && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
+                if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
                 {
                     Keys keyData = (Keys)MyKeyboardHookStruct.VirtualKeyCode;
-                    KeyEventArgs e = new KeyEventArgs(keyData);
-                    s_KeyDown.Invoke(null, e);
-                    handled = e.Handled;
+
+                    if (!_pressedKeys.Contains(keyData))
+                    {
+                        _pressedKeys.Add(keyData);
+                    }
+
+                    var keyEventArgs = new KeyEventArgs(keyData);
+
+                    s_KeyDown?.Invoke(null, keyEventArgs);
+                    handled = keyEventArgs.Handled;
                 }
 
                 // raise KeyPress
-                if (s_KeyPress != null && wParam == WM_KEYDOWN)
+                if (wParam == WM_KEYDOWN)
                 {
                     bool isDownShift = (GetKeyState(VK_SHIFT) & 0x80) == 0x80;
                     bool isDownCapslock = GetKeyState(VK_CAPITAL) != 0;
@@ -352,18 +370,27 @@ namespace Gma.UserActivityMonitor
                         char key = (char)inBuffer[0];
                         if ((isDownCapslock ^ isDownShift) && Char.IsLetter(key)) key = Char.ToUpper(key);
                         KeyPressEventArgs e = new KeyPressEventArgs(key);
-                        s_KeyPress.Invoke(null, e);
+                        
+                        s_KeyPress?.Invoke(null, e);
                         handled = handled || e.Handled;
                     }
                 }
 
                 // raise KeyUp
-                if (s_KeyUp != null && (wParam == WM_KEYUP || wParam == WM_SYSKEYUP))
+                if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
                 {
                     Keys keyData = (Keys)MyKeyboardHookStruct.VirtualKeyCode;
-                    KeyEventArgs e = new KeyEventArgs(keyData);
-                    s_KeyUp.Invoke(null, e);
-                    handled = handled || e.Handled;
+
+                    if (_pressedKeys.Contains(keyData))
+                    {
+                        _pressedKeys.Remove(keyData);
+                    }
+
+                    var keyEventArgs = new KeyEventArgs(keyData);
+
+                    s_KeyUp?.Invoke(null, keyEventArgs);
+                    
+                    handled = handled || keyEventArgs.Handled;
                 }
 
             }

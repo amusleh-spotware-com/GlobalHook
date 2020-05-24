@@ -17,16 +17,16 @@ namespace ConsoleTester
             //Application.SetCompatibleTextRenderingDefault(false);
 
 
-            HookManager.KeyPress += HookManager_KeyPress; ;
+            HookManager.KeyUp += HookManager_KeyUp;
 
             Application.Run();
 
             //Console.ReadLine();
         }
 
-        private static void HookManager_KeyPress(object sender, KeyPressEventArgs e)
+        private static void HookManager_KeyUp(object sender, KeyEventArgs e)
         {
-            System.Diagnostics.Trace.WriteLine($"Key Up: {e.KeyChar}");
+            System.Diagnostics.Trace.WriteLine($"KeyCode: {e.KeyCode} | Modifiers: {e.Modifiers}");
         }
     }
 }
