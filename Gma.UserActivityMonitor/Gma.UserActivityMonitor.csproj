@@ -120,6 +120,8 @@
     <Compile Include="HookManager.cs" />
     <Compile Include="HookManager.Structures.cs" />
     <Compile Include="HookManager.Windows.cs" />
+    <Compile Include="KeyType.cs" />
+    <Compile Include="KeyTypeToKeys.cs" />
     <Compile Include="MouseEventExtArgs.cs" />
   </ItemGroup>
   <ItemGroup>
