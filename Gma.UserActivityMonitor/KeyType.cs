@@ -50,15 +50,15 @@
 
         Escape,
 
-        IMEConvert,
+        ImeConvert,
 
-        IMENonconvert,
+        ImeNonconvert,
 
-        IMEAccept,
+        ImeAccept,
 
-        IMEAceept,
+        ImeAceept,
 
-        IMEModeChange,
+        ImeModeChange,
 
         Space,
 

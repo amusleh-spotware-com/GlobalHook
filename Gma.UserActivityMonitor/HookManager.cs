@@ -160,7 +160,7 @@ namespace Gma.UserActivityMonitor {
         private static event MouseEventHandler s_MouseDoubleClick;
 
         //The double click event will not be provided directly from hook.
-        //To fire the double click event wee need to monitor mouse up event and when it occures 
+        //To fire the double click event wee need to monitor mouse up event and when it occurs 
         //Two times during the time interval which is defined in Windows as a doble click time
         //we fire this event.
 
@@ -175,7 +175,7 @@ namespace Gma.UserActivityMonitor {
                 if (s_MouseDoubleClick == null)
                 {
                     //We create a timer to monitor interval between two clicks
-                    s_DoubleClickTimer = new Timer
+                    _doubleClickTimer = new Timer
                     {
                         //This interval will be set to the value we retrive from windows. This is a windows setting from contro planel.
                         Interval = GetDoubleClickTime(),
@@ -183,7 +183,7 @@ namespace Gma.UserActivityMonitor {
                         Enabled = false
                     };
                     //We define the callback function for the timer
-                    s_DoubleClickTimer.Tick += DoubleClickTimeElapsed;
+                    _doubleClickTimer.Tick += DoubleClickTimeElapsed;
                     //We start to monitor mouse up event.
                     MouseUp += OnMouseUp;
                 }
@@ -199,8 +199,8 @@ namespace Gma.UserActivityMonitor {
                         //Stop monitoring mouse up
                         MouseUp -= OnMouseUp;
                         //Dispose the timer
-                        s_DoubleClickTimer.Tick -= DoubleClickTimeElapsed;
-                        s_DoubleClickTimer = null;
+                        _doubleClickTimer.Tick -= DoubleClickTimeElapsed;
+                        _doubleClickTimer = null;
                     }
                 }
                 TryUnsubscribeFromGlobalMouseEvents();
@@ -208,15 +208,15 @@ namespace Gma.UserActivityMonitor {
         }
 
         //This field remembers mouse button pressed because in addition to the short interval it must be also the same button.
-        private static MouseButtons s_PrevClickedButton;
+        private static MouseButtons _prevClickedButton;
         //The timer to monitor time interval between two clicks.
-        private static Timer s_DoubleClickTimer;
+        private static Timer _doubleClickTimer;
 
         private static void DoubleClickTimeElapsed(object sender, EventArgs e)
         {
             //Timer is alapsed and no second click ocuured
-            s_DoubleClickTimer.Enabled = false;
-            s_PrevClickedButton = MouseButtons.None;
+            _doubleClickTimer.Enabled = false;
+            _prevClickedButton = MouseButtons.None;
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace Gma.UserActivityMonitor {
             //This should not heppen
             if (e.Clicks < 1) { return;}
             //If the secon click heppened on the same button
-            if (e.Button.Equals(s_PrevClickedButton))
+            if (e.Button.Equals(_prevClickedButton))
             {
                 if (s_MouseDoubleClick!=null)
                 {
@@ -238,14 +238,14 @@ namespace Gma.UserActivityMonitor {
                     s_MouseDoubleClick.Invoke(null, e);
                 }
                 //Stop timer
-                s_DoubleClickTimer.Enabled = false;
-                s_PrevClickedButton = MouseButtons.None;
+                _doubleClickTimer.Enabled = false;
+                _prevClickedButton = MouseButtons.None;
             }
             else
             {
                 //If it was the firts click start the timer
-                s_DoubleClickTimer.Enabled = true;
-                s_PrevClickedButton = e.Button;
+                _doubleClickTimer.Enabled = true;
+                _prevClickedButton = e.Button;
             }
         }
         #endregion

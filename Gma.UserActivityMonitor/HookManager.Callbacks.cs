@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -51,7 +50,6 @@ namespace Gma.UserActivityMonitor
         /// </remarks>
         private delegate int HookProc(int nCode, int wParam, IntPtr lParam);
 
-        //##############################################################################
         #region Mouse hook processing
 
         /// <summary>
@@ -60,15 +58,15 @@ namespace Gma.UserActivityMonitor
         /// When passing delegates to unmanaged code, they must be kept alive by the managed application 
         /// until it is guaranteed that they will never be called.
         /// </summary>
-        private static HookProc s_MouseDelegate;
+        private static HookProc _mouseDelegate;
 
         /// <summary>
         /// Stores the handle to the mouse hook procedure.
         /// </summary>
-        private static int s_MouseHookHandle;
+        private static int _mouseHookHandle;
 
-        private static int m_OldX;
-        private static int m_OldY;
+        private static int _mOldX;
+        private static int _mOldY;
 
         /// <summary>
         /// A callback function which will be called every Time a mouse activity detected.
@@ -99,7 +97,7 @@ namespace Gma.UserActivityMonitor
             if (nCode >= 0)
             {
                 //Marshall the data from callback.
-                MouseLLHookStruct mouseHookStruct = (MouseLLHookStruct)Marshal.PtrToStructure(lParam, typeof(MouseLLHookStruct));
+                MouseLlHookStruct mouseHookStruct = (MouseLlHookStruct)Marshal.PtrToStructure(lParam, typeof(MouseLlHookStruct));
 
                 //detect button clicked
                 MouseButtons button = MouseButtons.None;
@@ -110,35 +108,35 @@ namespace Gma.UserActivityMonitor
 
                 switch (wParam)
                 {
-                    case WM_LBUTTONDOWN:
+                    case WmLbuttondown:
                         mouseDown = true;
                         button = MouseButtons.Left;
                         clickCount = 1;
                         break;
-                    case WM_LBUTTONUP:
+                    case WmLbuttonup:
                         mouseUp = true;
                         button = MouseButtons.Left;
                         clickCount = 1;
                         break;
-                    case WM_LBUTTONDBLCLK: 
+                    case WmLbuttondblclk: 
                         button = MouseButtons.Left;
                         clickCount = 2;
                         break;
-                    case WM_RBUTTONDOWN:
+                    case WmRbuttondown:
                         mouseDown = true;
                         button = MouseButtons.Right;
                         clickCount = 1;
                         break;
-                    case WM_RBUTTONUP:
+                    case WmRbuttonup:
                         mouseUp = true;
                         button = MouseButtons.Right;
                         clickCount = 1;
                         break;
-                    case WM_RBUTTONDBLCLK: 
+                    case WmRbuttondblclk: 
                         button = MouseButtons.Right;
                         clickCount = 2;
                         break;
-                    case WM_MOUSEWHEEL:
+                    case WmMousewheel:
                         //If the message is WM_MOUSEWHEEL, the high-order word of MouseData member is the wheel delta. 
                         //One wheel click is defined as WHEEL_DELTA, which is 120. 
                         //(value >> 16) & 0xffff; retrieves the high-order word from the given 32-bit value
@@ -197,10 +195,10 @@ namespace Gma.UserActivityMonitor
                 }
 
                 //If someone listens to move and there was a change in coordinates raise move event
-                if ((s_MouseMove!=null || s_MouseMoveExt!=null) && (m_OldX != mouseHookStruct.Point.X || m_OldY != mouseHookStruct.Point.Y))
+                if ((s_MouseMove!=null || s_MouseMoveExt!=null) && (_mOldX != mouseHookStruct.Point.X || _mOldY != mouseHookStruct.Point.Y))
                 {
-                    m_OldX = mouseHookStruct.Point.X;
-                    m_OldY = mouseHookStruct.Point.Y;
+                    _mOldX = mouseHookStruct.Point.X;
+                    _mOldY = mouseHookStruct.Point.Y;
                     if (s_MouseMove != null)
                     {
                         s_MouseMove.Invoke(null, e);
@@ -218,26 +216,33 @@ namespace Gma.UserActivityMonitor
                 }
             }
 
-            //call next hook
-            return CallNextHookEx(s_MouseHookHandle, nCode, wParam, lParam);
+            try
+            {
+                //call next hook
+                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private static void EnsureSubscribedToGlobalMouseEvents()
         {
             // install Mouse hook only if it is not installed and must be installed
-            if (s_MouseHookHandle == 0)
+            if (_mouseHookHandle == 0)
             {
                 //See comment of this field. To avoid GC to clean it up.
-                s_MouseDelegate = MouseHookProc;
+                _mouseDelegate = MouseHookProc;
                 //install hook
-                s_MouseHookHandle = SetWindowsHookEx(
-                    WH_MOUSE_LL,
-                    s_MouseDelegate,
+                _mouseHookHandle = SetWindowsHookEx(
+                    WhMouseLl,
+                    _mouseDelegate,
                     IntPtr.Zero,
                     0);
 
                 //If SetWindowsHookEx fails.
-                if (s_MouseHookHandle == 0)
+                if (_mouseHookHandle == 0)
                 {
                     //Returns the error code returned by the last unmanaged function called using platform invoke that has the DllImportAttribute.SetLastError flag set. 
                     int errorCode = Marshal.GetLastWin32Error();
@@ -266,14 +271,14 @@ namespace Gma.UserActivityMonitor
 
         private static void ForceUnsunscribeFromGlobalMouseEvents()
         {
-            if (s_MouseHookHandle != 0)
+            if (_mouseHookHandle != 0)
             {
                 //uninstall hook
-                int result = UnhookWindowsHookEx(s_MouseHookHandle);
+                int result = UnhookWindowsHookEx(_mouseHookHandle);
                 //reset invalid handle
-                s_MouseHookHandle = 0;
+                _mouseHookHandle = 0;
                 //Free up for GC
-                s_MouseDelegate = null;
+                _mouseDelegate = null;
                 //if failed and exception must be thrown
                 if (result == 0)
                 {
@@ -287,7 +292,6 @@ namespace Gma.UserActivityMonitor
         
         #endregion
 
-        //##############################################################################
         #region Keyboard hook processing
 
         /// <summary>
@@ -296,12 +300,12 @@ namespace Gma.UserActivityMonitor
         /// When passing delegates to unmanaged code, they must be kept alive by the managed application 
         /// until it is guaranteed that they will never be called.
         /// </summary>
-        private static HookProc s_KeyboardDelegate;
+        private static HookProc _keyboardDelegate;
 
         /// <summary>
         /// Stores the handle to the Keyboard hook procedure.
         /// </summary>
-        private static int s_KeyboardHookHandle;
+        private static int _keyboardHookHandle;
 
         /// <summary>
         /// A callback function which will be called every Time a keyboard activity detected.
@@ -335,11 +339,11 @@ namespace Gma.UserActivityMonitor
             if (nCode >= 0)
             {
                 //read structure KeyboardHookStruct at lParam
-                KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
+                KeyboardHookStruct myKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
                 //raise KeyDown
-                if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
+                if (wParam == WmKeydown || wParam == WmSyskeydown)
                 {
-                    Keys keyData = (Keys)MyKeyboardHookStruct.VirtualKeyCode;
+                    Keys keyData = (Keys)myKeyboardHookStruct.VirtualKeyCode;
 
                     if (!_pressedKeys.Contains(keyData))
                     {
@@ -353,19 +357,19 @@ namespace Gma.UserActivityMonitor
                 }
 
                 // raise KeyPress
-                if (wParam == WM_KEYDOWN)
+                if (wParam == WmKeydown)
                 {
-                    bool isDownShift = (GetKeyState(VK_SHIFT) & 0x80) == 0x80;
-                    bool isDownCapslock = GetKeyState(VK_CAPITAL) != 0;
+                    bool isDownShift = (GetKeyState(VkShift) & 0x80) == 0x80;
+                    bool isDownCapslock = GetKeyState(VkCapital) != 0;
 
                     byte[] keyState = new byte[256];
                     GetKeyboardState(keyState);
                     byte[] inBuffer = new byte[2];
-                    if (ToAscii(MyKeyboardHookStruct.VirtualKeyCode,
-                              MyKeyboardHookStruct.ScanCode,
+                    if (ToAscii(myKeyboardHookStruct.VirtualKeyCode,
+                              myKeyboardHookStruct.ScanCode,
                               keyState,
                               inBuffer,
-                              MyKeyboardHookStruct.Flags) == 1)
+                              myKeyboardHookStruct.Flags) == 1)
                     {
                         char key = (char)inBuffer[0];
                         if ((isDownCapslock ^ isDownShift) && Char.IsLetter(key)) key = Char.ToUpper(key);
@@ -377,9 +381,9 @@ namespace Gma.UserActivityMonitor
                 }
 
                 // raise KeyUp
-                if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+                if (wParam == WmKeyup || wParam == WmSyskeyup)
                 {
-                    Keys keyData = (Keys)MyKeyboardHookStruct.VirtualKeyCode;
+                    Keys keyData = (Keys)myKeyboardHookStruct.VirtualKeyCode;
 
                     if (_pressedKeys.Contains(keyData))
                     {
@@ -399,25 +403,32 @@ namespace Gma.UserActivityMonitor
             if (handled)
                 return -1;
 
-            //forward to other application
-            return CallNextHookEx(s_KeyboardHookHandle, nCode, wParam, lParam);
+            try
+            {
+                //forward to other application
+                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private static void EnsureSubscribedToGlobalKeyboardEvents()
         {
             // install Keyboard hook only if it is not installed and must be installed
-            if (s_KeyboardHookHandle == 0)
+            if (_keyboardHookHandle == 0)
             {
                 //See comment of this field. To avoid GC to clean it up.
-                s_KeyboardDelegate = KeyboardHookProc;
+                _keyboardDelegate = KeyboardHookProc;
                 //install hook
-                s_KeyboardHookHandle = SetWindowsHookEx(
-                    WH_KEYBOARD_LL,
-                    s_KeyboardDelegate,
+                _keyboardHookHandle = SetWindowsHookEx(
+                    WhKeyboardLl,
+                    _keyboardDelegate,
                         IntPtr.Zero,
                             0);
                 //If SetWindowsHookEx fails.
-                if (s_KeyboardHookHandle == 0)
+                if (_keyboardHookHandle == 0)
                 {
                     //Returns the error code returned by the last unmanaged function called using platform invoke that has the DllImportAttribute.SetLastError flag set. 
                     int errorCode = Marshal.GetLastWin32Error();
@@ -442,14 +453,14 @@ namespace Gma.UserActivityMonitor
 
         private static void ForceUnsunscribeFromGlobalKeyboardEvents()
         {
-            if (s_KeyboardHookHandle != 0)
+            if (_keyboardHookHandle != 0)
             {
                 //uninstall hook
-                int result = UnhookWindowsHookEx(s_KeyboardHookHandle);
+                int result = UnhookWindowsHookEx(_keyboardHookHandle);
                 //reset invalid handle
-                s_KeyboardHookHandle = 0;
+                _keyboardHookHandle = 0;
                 //Free up for GC
-                s_KeyboardDelegate = null;
+                _keyboardDelegate = null;
                 //if failed and exception must be thrown
                 if (result == 0)
                 {

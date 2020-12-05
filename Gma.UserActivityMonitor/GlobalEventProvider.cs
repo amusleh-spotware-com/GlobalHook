@@ -24,7 +24,7 @@ namespace Gma.UserActivityMonitor
         //################################################################
         #region Mouse events
 
-        private event MouseEventHandler m_MouseMove;
+        private event MouseEventHandler s_MMouseMove;
 
         /// <summary>
         /// Occurs when the mouse pointer is moved. 
@@ -33,17 +33,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseMove == null)
+                if (s_MMouseMove == null)
                 {
                     HookManager.MouseMove += HookManager_MouseMove;
                 }
-                m_MouseMove += value;
+                s_MMouseMove += value;
             }
 
             remove
             {
-                m_MouseMove -= value;
-                if (m_MouseMove == null)
+                s_MMouseMove -= value;
+                if (s_MMouseMove == null)
                 {
                     HookManager.MouseMove -= HookManager_MouseMove;
                 }
@@ -52,13 +52,13 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseMove(object sender, MouseEventArgs e)
         {
-            if (m_MouseMove != null)
+            if (s_MMouseMove != null)
             {
-                m_MouseMove.Invoke(this, e);
+                s_MMouseMove.Invoke(this, e);
             }
         }
 
-        private event MouseEventHandler m_MouseClick;
+        private event MouseEventHandler s_MMouseClick;
         /// <summary>
         /// Occurs when a click was performed by the mouse. 
         /// </summary>
@@ -66,17 +66,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseClick == null)
+                if (s_MMouseClick == null)
                 {
                     HookManager.MouseClick += HookManager_MouseClick;
                 }
-                m_MouseClick += value;
+                s_MMouseClick += value;
             }
 
             remove
             {
-                m_MouseClick -= value;
-                if (m_MouseClick == null)
+                s_MMouseClick -= value;
+                if (s_MMouseClick == null)
                 {
                     HookManager.MouseClick -= HookManager_MouseClick;
                 }
@@ -85,13 +85,13 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseClick(object sender, MouseEventArgs e)
         {
-            if (m_MouseClick != null)
+            if (s_MMouseClick != null)
             {
-                m_MouseClick.Invoke(this, e);
+                s_MMouseClick.Invoke(this, e);
             }
         }
 
-        private event MouseEventHandler m_MouseDown;
+        private event MouseEventHandler s_MMouseDown;
 
         /// <summary>
         /// Occurs when the mouse a mouse button is pressed. 
@@ -100,17 +100,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseDown == null)
+                if (s_MMouseDown == null)
                 {
                     HookManager.MouseDown += HookManager_MouseDown;
                 }
-                m_MouseDown += value;
+                s_MMouseDown += value;
             }
 
             remove
             {
-                m_MouseDown -= value;
-                if (m_MouseDown == null)
+                s_MMouseDown -= value;
+                if (s_MMouseDown == null)
                 {
                     HookManager.MouseDown -= HookManager_MouseDown;
                 }
@@ -119,14 +119,14 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseDown(object sender, MouseEventArgs e)
         {
-            if (m_MouseDown != null)
+            if (s_MMouseDown != null)
             {
-                m_MouseDown.Invoke(this, e);
+                s_MMouseDown.Invoke(this, e);
             }
         }
 
 
-        private event MouseEventHandler m_MouseUp;
+        private event MouseEventHandler s_MMouseUp;
 
         /// <summary>
         /// Occurs when a mouse button is released. 
@@ -135,17 +135,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseUp == null)
+                if (s_MMouseUp == null)
                 {
                     HookManager.MouseUp += HookManager_MouseUp;
                 }
-                m_MouseUp += value;
+                s_MMouseUp += value;
             }
 
             remove
             {
-                m_MouseUp -= value;
-                if (m_MouseUp == null)
+                s_MMouseUp -= value;
+                if (s_MMouseUp == null)
                 {
                     HookManager.MouseUp -= HookManager_MouseUp;
                 }
@@ -154,13 +154,13 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseUp(object sender, MouseEventArgs e)
         {
-            if (m_MouseUp != null)
+            if (s_MMouseUp != null)
             {
-                m_MouseUp.Invoke(this, e);
+                s_MMouseUp.Invoke(this, e);
             }
         }
 
-        private event MouseEventHandler m_MouseDoubleClick;
+        private event MouseEventHandler s_MMouseDoubleClick;
 
         /// <summary>
         /// Occurs when a double clicked was performed by the mouse. 
@@ -169,17 +169,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseDoubleClick == null)
+                if (s_MMouseDoubleClick == null)
                 {
                     HookManager.MouseDoubleClick += HookManager_MouseDoubleClick;
                 }
-                m_MouseDoubleClick += value;
+                s_MMouseDoubleClick += value;
             }
 
             remove
             {
-                m_MouseDoubleClick -= value;
-                if (m_MouseDoubleClick == null)
+                s_MMouseDoubleClick -= value;
+                if (s_MMouseDoubleClick == null)
                 {
                     HookManager.MouseDoubleClick -= HookManager_MouseDoubleClick;
                 }
@@ -188,14 +188,14 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (m_MouseDoubleClick != null)
+            if (s_MMouseDoubleClick != null)
             {
-                m_MouseDoubleClick.Invoke(this, e);
+                s_MMouseDoubleClick.Invoke(this, e);
             }
         }
 
 
-        private event EventHandler<MouseEventExtArgs> m_MouseMoveExt;
+        private event EventHandler<MouseEventExtArgs> s_MMouseMoveExt;
 
         /// <summary>
         /// Occurs when the mouse pointer is moved. 
@@ -208,17 +208,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseMoveExt == null)
+                if (s_MMouseMoveExt == null)
                 {
                     HookManager.MouseMoveExt += HookManager_MouseMoveExt;
                 }
-                m_MouseMoveExt += value;
+                s_MMouseMoveExt += value;
             }
 
             remove
             {
-                m_MouseMoveExt -= value;
-                if (m_MouseMoveExt == null)
+                s_MMouseMoveExt -= value;
+                if (s_MMouseMoveExt == null)
                 {
                     HookManager.MouseMoveExt -= HookManager_MouseMoveExt;
                 }
@@ -227,13 +227,13 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseMoveExt(object sender, MouseEventExtArgs e)
         {
-            if (m_MouseMoveExt != null)
+            if (s_MMouseMoveExt != null)
             {
-                m_MouseMoveExt.Invoke(this, e);
+                s_MMouseMoveExt.Invoke(this, e);
             }
         }
 
-        private event EventHandler<MouseEventExtArgs> m_MouseClickExt;
+        private event EventHandler<MouseEventExtArgs> s_MMouseClickExt;
 
         /// <summary>
         /// Occurs when a click was performed by the mouse. 
@@ -246,17 +246,17 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_MouseClickExt == null)
+                if (s_MMouseClickExt == null)
                 {
                     HookManager.MouseClickExt += HookManager_MouseClickExt;
                 }
-                m_MouseClickExt += value;
+                s_MMouseClickExt += value;
             }
 
             remove
             {
-                m_MouseClickExt -= value;
-                if (m_MouseClickExt == null)
+                s_MMouseClickExt -= value;
+                if (s_MMouseClickExt == null)
                 {
                     HookManager.MouseClickExt -= HookManager_MouseClickExt;
                 }
@@ -265,9 +265,9 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_MouseClickExt(object sender, MouseEventExtArgs e)
         {
-            if (m_MouseClickExt != null)
+            if (s_MMouseClickExt != null)
             {
-                m_MouseClickExt.Invoke(this, e);
+                s_MMouseClickExt.Invoke(this, e);
             }
         }
 
@@ -277,7 +277,7 @@ namespace Gma.UserActivityMonitor
         //################################################################
         #region Keyboard events
 
-        private event KeyPressEventHandler m_KeyPress;
+        private event KeyPressEventHandler s_MKeyPress;
 
         /// <summary>
         /// Occurs when a key is pressed.
@@ -298,16 +298,16 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_KeyPress==null)
+                if (s_MKeyPress==null)
                 {
                     HookManager.KeyPress +=HookManager_KeyPress;
                 }
-                m_KeyPress += value;
+                s_MKeyPress += value;
             }
             remove
             {
-                m_KeyPress -= value;
-                if (m_KeyPress == null)
+                s_MKeyPress -= value;
+                if (s_MKeyPress == null)
                 {
                     HookManager.KeyPress -= HookManager_KeyPress;
                 }
@@ -316,13 +316,13 @@ namespace Gma.UserActivityMonitor
 
         void HookManager_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (m_KeyPress != null)
+            if (s_MKeyPress != null)
             {
-                m_KeyPress.Invoke(this, e);
+                s_MKeyPress.Invoke(this, e);
             }
         }
 
-        private event KeyEventHandler m_KeyUp;
+        private event KeyEventHandler s_MKeyUp;
 
         /// <summary>
         /// Occurs when a key is released. 
@@ -331,16 +331,16 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_KeyUp == null)
+                if (s_MKeyUp == null)
                 {
                     HookManager.KeyUp += HookManager_KeyUp;
                 }
-                m_KeyUp += value;
+                s_MKeyUp += value;
             }
             remove
             {
-                m_KeyUp -= value;
-                if (m_KeyUp == null)
+                s_MKeyUp -= value;
+                if (s_MKeyUp == null)
                 {
                     HookManager.KeyUp -= HookManager_KeyUp;
                 }
@@ -349,13 +349,13 @@ namespace Gma.UserActivityMonitor
 
         private void HookManager_KeyUp(object sender, KeyEventArgs e)
         {
-            if (m_KeyUp != null)
+            if (s_MKeyUp != null)
             {
-                m_KeyUp.Invoke(this, e);
+                s_MKeyUp.Invoke(this, e);
             }
         }
 
-        private event KeyEventHandler m_KeyDown;
+        private event KeyEventHandler s_MKeyDown;
 
         /// <summary>
         /// Occurs when a key is preseed. 
@@ -364,16 +364,16 @@ namespace Gma.UserActivityMonitor
         {
             add
             {
-                if (m_KeyDown == null)
+                if (s_MKeyDown == null)
                 {
                     HookManager.KeyDown += HookManager_KeyDown;
                 }
-                m_KeyDown += value;
+                s_MKeyDown += value;
             }
             remove
             {
-                m_KeyDown -= value;
-                if (m_KeyDown == null)
+                s_MKeyDown -= value;
+                if (s_MKeyDown == null)
                 {
                     HookManager.KeyDown -= HookManager_KeyDown;
                 }
@@ -382,7 +382,7 @@ namespace Gma.UserActivityMonitor
 
         private void HookManager_KeyDown(object sender, KeyEventArgs e)
         {
-            m_KeyDown.Invoke(this, e);
+            s_MKeyDown.Invoke(this, e);
         }
 
         #endregion
