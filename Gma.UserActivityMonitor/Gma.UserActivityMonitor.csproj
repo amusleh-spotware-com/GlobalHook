@@ -123,6 +123,7 @@
     <Compile Include="KeyType.cs" />
     <Compile Include="KeyTypeToKeys.cs" />
     <Compile Include="MouseEventExtArgs.cs" />
+    <Compile Include="ProcessHook.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
