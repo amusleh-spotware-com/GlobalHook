@@ -25,6 +25,13 @@ namespace Gma.UserActivityMonitor
         public ProcessHook(Process process)
         {
             _process = process;
+
+            var windowPlacement = GetProcessWindowPlacement();
+
+            if (windowPlacement != null && windowPlacement.Value.showCmd == 3)
+            {
+                IsMouseOverWindow = true;
+            }
         }
 
         public bool? IsMouseOverWindow { get; private set; }
