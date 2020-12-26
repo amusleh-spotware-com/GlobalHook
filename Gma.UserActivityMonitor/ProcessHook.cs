@@ -21,12 +21,10 @@ namespace Gma.UserActivityMonitor
         }
 
         private readonly Process _process;
-        private readonly Action<string> _print;
 
-        public ProcessHook(Process process, Action<string> print)
+        public ProcessHook(Process process)
         {
             _process = process;
-            _print = print;
         }
 
         public bool? IsMouseOverWindow { get; private set; }
