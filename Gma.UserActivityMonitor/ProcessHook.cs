@@ -11,6 +11,12 @@ namespace Gma.UserActivityMonitor
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
         private struct WINDOWPLACEMENT {
             public int length;
             public int flags;
@@ -28,7 +34,7 @@ namespace Gma.UserActivityMonitor
 
             var windowPlacement = GetProcessWindowPlacement();
 
-            if (windowPlacement != null && windowPlacement.Value.showCmd == 3)
+            if (windowPlacement != null && windowPlacement.Value.showCmd == 3 && IsActive())
             {
                 IsMouseOverWindow = true;
             }
@@ -94,8 +100,12 @@ namespace Gma.UserActivityMonitor
         {
             var windowPlacement = GetProcessWindowPlacement();
 
-            if (windowPlacement == null || windowPlacement.Value.showCmd == 2)
+            if (windowPlacement == null || windowPlacement.Value.showCmd == 2 || !IsActive())
             {
+                IsMouseOverWindow = false;
+
+                s_MouseLeave?.Invoke(this, e);
+
                 return;
             }
 
@@ -142,6 +152,19 @@ namespace Gma.UserActivityMonitor
             return GetWindowPlacement(_process.MainWindowHandle, ref windowPlacement)
                 ? (WINDOWPLACEMENT?)windowPlacement
                 : null;
+        }
+
+        private bool IsActive()
+        {
+            var activatedHandle = GetForegroundWindow();
+
+            if (activatedHandle == IntPtr.Zero) return false;
+
+            var procId = _process.Id;
+
+            GetWindowThreadProcessId(activatedHandle, out var activeProcId);
+
+            return activeProcId == procId;
         }
     }
 }
